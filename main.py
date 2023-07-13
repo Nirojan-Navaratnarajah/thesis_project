@@ -8,7 +8,6 @@ window = Tk()
 window.title("HV/DCDC ADC Parameters")
 window.geometry("800x600")
 
-<<<<<<< HEAD
 # Create a frame for the FSI data
 fsi_frame = Frame(window, bd=1, relief=SOLID)
 fsi_frame.pack(side=LEFT, padx=10, pady=10)
@@ -47,22 +46,6 @@ for i, (key, text_box) in enumerate(text_boxes_left.items()):
 # Create raw data text boxes in the right side
 raw_text_boxes_left = {
     key: Entry(right_frame, width=20, state="readonly") for key in text_boxes_left.keys()
-=======
-# Create labels
-labels = {
-    "Current_LV_Phase1_u16": Label(window, text="Current_LV_Phase1_u16: ", anchor=W),
-    "Current_LV_Phase2_u16": Label(window, text="Current_LV_Phase2_u16: ", anchor=W),
-    "Current_LV_u16": Label(window, text="Current_LV_u16: ", anchor=W),
-    "Voltage_LV_u16": Label(window, text="Voltage_LV_u16: ", anchor=W),
-    "Voltage_VClamp_u16": Label(window, text="Voltage_VClamp_u16: ", anchor=W),
-    "Voltage_HV_u16": Label(window, text="Voltage_HV_u16: ", anchor=W),
-    "Current_HV_u16": Label(window, text="Current_HV_u16: ", anchor=W)
-}
-
-# Create raw data labels
-raw_labels = {
-    key: Label(window, text="", anchor=W) for key in labels.keys()
->>>>>>> 72fe982a85e6df674860528fde518c3a35e3bd72
 }
 
 scaling_factors = {
@@ -75,22 +58,12 @@ scaling_factors = {
     "Current_HV_u16": {"lower_limit": -14.285714, "upper_limit": 14.285714, "resolution": 0.00697715, "offset": 2047.5}
 }
 
-<<<<<<< HEAD
 # Adjust row heights to increase vertical space
 for i in range(len(text_boxes_left)):
     right_frame.rowconfigure(i, minsize=30)
 
 speed_label = Label(left_frame, text="Speed: ", anchor=CENTER)
 speed_label.grid(row=len(text_boxes_left), columnspan=2, sticky=W+E)
-=======
-# Grid labels and raw data labels
-for i, (label, raw_label) in enumerate(zip(labels.values(), raw_labels.values())):
-    label.grid(row=i, column=0, sticky=W)
-    raw_label.grid(row=i, column=1, sticky=W)
-
-speed_label = Label(window, text="Speed: ", anchor=CENTER)
-speed_label.grid(row=8, column=0, sticky=W + E)
->>>>>>> 72fe982a85e6df674860528fde518c3a35e3bd72
 
 packet_count = 0
 start_time = 0
@@ -120,17 +93,12 @@ def process_packet(packet):
         payload = packet.getlayer(Raw).load
         data = [payload[i:i + 2][::-1] for i in range(0, len(payload), 2)]  # Note byte order switching
 
-<<<<<<< HEAD
         for i, (key, text_box, raw_text_box) in enumerate(zip(text_boxes_left.keys(), text_boxes_left.values(), raw_text_boxes_left.values())):
-=======
-        for i, (key, label, raw_label) in enumerate(zip(labels.keys(), labels.values(), raw_labels.values())):
->>>>>>> 72fe982a85e6df674860528fde518c3a35e3bd72
             if key in scaling_factors and i < len(data):
                 scaling_factor = scaling_factors[key]
                 hex_value = int.from_bytes(data[i], byteorder="big", signed=False)
                 scaled_value = ((hex_value - scaling_factor.get("offset", 0)) * scaling_factor.get("resolution", 1.0))
 
-<<<<<<< HEAD
                 text_box.config(state="normal")
                 text_box.delete(0, END)
                 text_box.insert(END, "{:.2f}".format(scaled_value))
@@ -149,13 +117,6 @@ def process_packet(packet):
                 raw_text_box.config(state="normal")
                 raw_text_box.delete(0, END)
                 raw_text_box.config(state="readonly")
-=======
-                label.config(text="{}: {:.2f}".format(key, scaled_value))
-                raw_label.config(text="Raw: 0x{:04x}".format(hex_value))
-            else:
-                label.config(text="{}: ".format(key))
-                raw_label.config(text="")
->>>>>>> 72fe982a85e6df674860528fde518c3a35e3bd72
 
         packet_count += 1
 
@@ -164,11 +125,7 @@ def capture_packets(interface):
     sniff(iface=interface, prn=process_packet, filter="ether dst host 00:73:41:00:04:f8", store=0)
 
 # Start capturing packets in a separate thread
-<<<<<<< HEAD
 interface = "Ethernet"  # Update with the correct interface name
-=======
-interface = "Ethernet 2"  # Update with the correct interface name
->>>>>>> 72fe982a85e6df674860528fde518c3a35e3bd72
 capture_thread = threading.Thread(target=capture_packets, args=(interface,))
 capture_thread.start()
 
