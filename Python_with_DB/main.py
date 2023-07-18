@@ -90,7 +90,7 @@ for i in range(1, 5):
 # Create a function to send a single Ethernet frame
 def send_single_frame():
     dst_mac = "04:03:02:01:06:05"  # Destination MAC address
-    src_mac = "00:73:41:00:04:f8"  # Source MAC address
+    src_mac = "F8:E4:3B:73:58:19"  #"00:73:41:00:04:f8"  # Source MAC address
     ethertype = 0xffff  # EtherType (0xffff)
 
     payload = b""
@@ -104,7 +104,7 @@ def send_single_frame():
     max_attempts = 2
     for attempt in range(max_attempts):
         try:
-            sendp(packet, iface="388D")  # Replace "Ethernet" with your network interface
+            sendp(packet, iface="Gateway")  # Replace "Ethernet" with your network interface
             break  # If sending the packet was successful, break out of the loop
         except Exception as e:
             if attempt == max_attempts - 1:  # If this was the last attempt, raise the exception
@@ -156,10 +156,10 @@ def process_packet(packet):
 
 # Function to capture packets
 def capture_packets(interface):
-    sniff(iface=interface, prn=process_packet, filter="ether dst host 08:97:98:DD:EF:61", store=0)  # 00:73:41:00:04:f8", store=0)
+    sniff(iface=interface, prn=process_packet, filter="ether dst host F8:E4:3B:73:58:19", store=0)  #08:97:98:DD:EF:61", store=0)  # 00:73:41:00:04:f8", store=0)
 
 # Start capturing packets in a separate thread
-interface = "388D"  # Update with the correct interface name
+interface = "Gateway"  # Update with the correct interface name
 capture_thread = threading.Thread(target=capture_packets, args=(interface,))
 capture_thread.start()
 
