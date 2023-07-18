@@ -2,15 +2,93 @@ from tkinter import *
 from scapy.all import *
 import time
 import threading
+import os
+import sqlite3
+from tkinter import messagebox
+
+# Database file path
+db_file = 'scaling_factors.db'
+
+# Scaling Factors
+scaling_factors = {
+    "Current_LV_Phase1_u16": {"lower_limit": 0, "upper_limit": 0,"resolution": 0, "offset": 0},
+    "Current_LV_Phase2_u16": {"lower_limit": 0, "upper_limit": 0, "resolution": 0, "offset": 0},
+    "Current_LV_u16": {"lower_limit": -165, "upper_limit": 165, "resolution": 0.080586081, "offset": 2047.5},
+    "Voltage_LV_u16": {"lower_limit": 0, "upper_limit": 26.871, "resolution": 0.006561905, "offset": 0},
+    "Voltage_VClamp_u16": {"lower_limit": 0, "upper_limit": 93.748, "resolution": 0.022893284, "offset": 0},
+    "Voltage_HV_u16": {"lower_limit": 0, "upper_limit": 996.3793, "resolution": 0.243316068, "offset": 0},
+    "Current_HV_u16": {"lower_limit": -14.285714, "upper_limit": 14.285714, "resolution": 0.00697715, "offset": 2047.5}
+}
+
+# Check if database file exists
+if not os.path.isfile(db_file):
+    # Create and populate the database
+    conn = sqlite3.connect(db_file)
+    c = conn.cursor()
+    c.execute('''CREATE TABLE scaling_factors
+                 (parameter TEXT, lower_limit REAL, upper_limit REAL, resolution REAL, offset REAL)''')
+    for parameter, values in scaling_factors.items():
+        c.execute('''INSERT INTO scaling_factors VALUES (?, ?, ?, ?, ?)''',
+                  (parameter, values['lower_limit'], values['upper_limit'], values['resolution'], values['offset']))
+    conn.commit()
+else:
+    # Retrieve the scaling factors from the database
+    conn = sqlite3.connect(db_file)
+    c = conn.cursor()
+    c.execute('''SELECT * FROM scaling_factors''')
+    rows = c.fetchall()
+    for row in rows:
+        parameter, lower_limit, upper_limit, resolution, offset = row
+        scaling_factors[parameter] = {'lower_limit': lower_limit, 'upper_limit': upper_limit, 'resolution': resolution, 'offset': offset}
+
+
+def update_scaling_factors():
+    # Create a new window
+    update_window = Toplevel(window)
+
+    # Create labels and entry widgets for each scaling factor
+    entry_widgets = {}
+    for i, parameter in enumerate(scaling_factors.keys()):
+        Label(update_window, text=parameter).grid(row=i, column=0)
+        entry_widgets[parameter] = {}
+        for j, key in enumerate(['lower_limit', 'upper_limit', 'resolution', 'offset']):
+            entry_widgets[parameter][key] = Entry(update_window)
+            entry_widgets[parameter][key].grid(row=i, column=j+1)
+            entry_widgets[parameter][key].insert(0, str(scaling_factors[parameter][key]))
+
+    # Function to submit the changes
+    def submit_changes():
+        try:
+            # Update the scaling_factors dictionary and the database
+            for parameter, entries in entry_widgets.items():
+                new_values = {key: float(entry.get()) for key, entry in entries.items()}
+                scaling_factors[parameter] = new_values
+                c.execute('''UPDATE scaling_factors SET lower_limit = ?, upper_limit = ?, resolution = ?, offset = ? WHERE parameter = ?''',
+                          (new_values['lower_limit'], new_values['upper_limit'], new_values['resolution'], new_values['offset'], parameter))
+            conn.commit()
+
+            # Close the update window
+            update_window.destroy()
+        except ValueError:
+            # Show an error message if the user input is not valid
+            messagebox.showerror("Error", "Invalid input. Please enter numeric values.")
+
+    # Create a submit button
+    Button(update_window, text="Submit", command=submit_changes).grid(row=len(scaling_factors), column=0, columnspan=2)
+
 
 # Create GUI
 window = Tk()
 window.title("HV/DCDC ADC Parameters")
 window.geometry("600x450")
 
+# Create a container for the left side widgets
+left_container = Frame(window)
+left_container.pack(side=LEFT)
+
 # Create a frame for the FSI data
-fsi_frame = Frame(window, bd=1, relief=SOLID)
-fsi_frame.pack(side=LEFT, padx=10, pady=10)
+fsi_frame = Frame(left_container, bd=1, relief=SOLID)
+fsi_frame.pack(padx=10, pady=10)
 
 # Create a label for the frame
 fsi_label = Label(fsi_frame, text="FSI Data From HV/DCDC", font=("Arial", 14, "bold"))
@@ -19,10 +97,6 @@ fsi_label.pack(side=TOP)
 # Create a Frame for the left side
 left_frame = Frame(fsi_frame)
 left_frame.pack(side=LEFT, padx=10, pady=10)
-
-# Create a Frame for the right side
-right_frame = Frame(window)
-right_frame.pack(side=LEFT, padx=10, pady=10)
 
 # Create labels and text boxes in the left side
 labels_left = {
@@ -50,22 +124,23 @@ packet_count = 0
 start_time = 0
 payload = b""  # Initialize payload variable
 
-# Scaling Factors
-scaling_factors = {
-    "Current_LV_Phase1_u16": {"lower_limit": 0, "upper_limit": 0},
-    "Current_LV_Phase2_u16": {"lower_limit": 0, "upper_limit": 0},
-    "Current_LV_u16": {"lower_limit": -165, "upper_limit": 165, "resolution": 0.080586081, "offset": 2047.5},
-    "Voltage_LV_u16": {"lower_limit": 0, "upper_limit": 26.871, "resolution": 0.006561905, "offset": 0},
-    "Voltage_VClamp_u16": {"lower_limit": 0, "upper_limit": 93.748, "resolution": 0.022893284, "offset": 0},
-    "Voltage_HV_u16": {"lower_limit": 0, "upper_limit": 996.3793, "resolution": 0.243316068, "offset": 0},
-    "Current_HV_u16": {"lower_limit": -14.285714, "upper_limit": 14.285714, "resolution": 0.00697715, "offset": 2047.5}
-}
+# Create a frame for the Update Scaling Factors button
+button_frame = Frame(left_container)
+button_frame.pack(padx=10, pady=10)
+
+# Create a button to trigger updating the scaling factors
+update_button = Button(button_frame, text="Update Scaling Factors", command=update_scaling_factors)
+update_button.pack(pady=10)
+
+# Create a Frame for the right side
+right_frame = Frame(window)
+right_frame.pack(side=RIGHT, padx=10, pady=10)
 
 # Create a frame for the Ethernet Frame Sender
 ethernet_frame_sender_frame = Frame(right_frame, bd=1, relief=SOLID)
 
 # Use a label to set a minimum height for the frame
-empty_label = Label(ethernet_frame_sender_frame, height=2)
+empty_label = Label(ethernet_frame_sender_frame, height=6)
 empty_label.pack()
 
 ethernet_frame_sender_frame.pack(padx=10, pady=10)
