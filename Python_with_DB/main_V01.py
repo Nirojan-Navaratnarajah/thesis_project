@@ -5,14 +5,13 @@ import threading
 import os
 import sqlite3
 from tkinter import messagebox
-import queue
 
 # Database file path
 db_file = 'scaling_factors.db'
 
 # Scaling Factors
 scaling_factors = {
-    "Current_LV_Phase1_u16": {"lower_limit": 0, "upper_limit": 0, "resolution": 0, "offset": 0},
+    "Current_LV_Phase1_u16": {"lower_limit": 0, "upper_limit": 0,"resolution": 0, "offset": 0},
     "Current_LV_Phase2_u16": {"lower_limit": 0, "upper_limit": 0, "resolution": 0, "offset": 0},
     "Current_LV_u16": {"lower_limit": -165, "upper_limit": 165, "resolution": 0.080586081, "offset": 2047.5},
     "Voltage_LV_u16": {"lower_limit": 0, "upper_limit": 26.871, "resolution": 0.006561905, "offset": 0},
@@ -40,8 +39,7 @@ else:
     rows = c.fetchall()
     for row in rows:
         parameter, lower_limit, upper_limit, resolution, offset = row
-        scaling_factors[parameter] = {'lower_limit': lower_limit, 'upper_limit': upper_limit,
-                                      'resolution': resolution, 'offset': offset}
+        scaling_factors[parameter] = {'lower_limit': lower_limit, 'upper_limit': upper_limit, 'resolution': resolution, 'offset': offset}
 
 
 def update_scaling_factors():
@@ -55,7 +53,7 @@ def update_scaling_factors():
         entry_widgets[parameter] = {}
         for j, key in enumerate(['lower_limit', 'upper_limit', 'resolution', 'offset']):
             entry_widgets[parameter][key] = Entry(update_window)
-            entry_widgets[parameter][key].grid(row=i, column=j + 1)
+            entry_widgets[parameter][key].grid(row=i, column=j+1)
             entry_widgets[parameter][key].insert(0, str(scaling_factors[parameter][key]))
 
     # Function to submit the changes
@@ -122,6 +120,10 @@ for i, (key, label) in enumerate(labels_left.items()):
 speed_label = Label(left_frame, text="Speed: ", anchor=CENTER)
 speed_label.grid(row=len(labels_left), columnspan=2, padx=5, pady=10)
 
+packet_count = 0
+start_time = 0
+payload = b""  # Initialize payload variable
+
 # Create a frame for the Update Scaling Factors button
 button_frame = Frame(left_container)
 button_frame.pack(padx=10, pady=10)
@@ -144,8 +146,7 @@ empty_label.pack()
 ethernet_frame_sender_frame.pack(padx=10, pady=10)
 
 # Create a label for the Ethernet Frame Sender
-ethernet_frame_sender_label = Label(ethernet_frame_sender_frame, text="Ethernet Frame Sender",
-                                    font=("Arial", 14, "bold"))
+ethernet_frame_sender_label = Label(ethernet_frame_sender_frame, text="Ethernet Frame Sender", font=("Arial", 14, "bold"))
 ethernet_frame_sender_label.pack(side=TOP)
 
 # Create labels and text boxes for data entry
@@ -164,7 +165,7 @@ for i in range(1, 5):
 # Create a function to send a single Ethernet frame
 def send_single_frame():
     dst_mac = "04:03:02:01:06:05"  # Destination MAC address
-    src_mac = "F8:E4:3B:73:58:19"  # Source MAC address
+    src_mac = "F8:E4:3B:73:58:19"  #"00:73:41:00:04:f8"  # Source MAC address
     ethertype = 0xffff  # EtherType (0xffff)
 
     payload = b""
@@ -191,37 +192,11 @@ def send_single_frame():
 send_button = Button(ethernet_frame_sender_frame, text="Send Frame", command=send_single_frame)
 send_button.pack(pady=10)
 
-# Create a queue for inter-thread communication
-packet_queue = queue.Queue()
-
-# Function to process each packet
-def process_packet(packet):
-    global packet_count, payload
-    if packet.haslayer(Ether) and packet.haslayer(Raw):
-        payload = packet.getlayer(Raw).load
-        data = [payload[i:i + 2][::-1] for i in range(0, len(payload), 2)]  # Note byte order switching
-
-        packet_queue.put(data)
-
-
 # Function to update the GUI
 def update_gui():
-    while not packet_queue.empty():
-        data = packet_queue.get()
-        for i, (key, label) in enumerate(labels_left.items()):
-            if key in scaling_factors and i < len(data):
-                scaling_factor = scaling_factors[key]
-                hex_value = int.from_bytes(data[i], byteorder="big", signed=False)
-                scaled_value = ((hex_value - scaling_factor.get("offset", 0)) * scaling_factor.get("resolution", 1.0))
-
-                text_boxes_left[key].delete(0, END)
-                text_boxes_left[key].insert(END, "{:.2f}".format(scaled_value))
-            else:
-                text_boxes_left[key].delete(0, END)
-
+    global packet_count, start_time
     window.update()
-    window.after(1000, update_gui)  # Adjust the update frequency based on your needs
-
+    window.after(100, update_gui)  # Schedule the next GUI update
 
 # Function to calculate speed and update speed label
 def calculate_speed():
@@ -232,21 +207,38 @@ def calculate_speed():
         speed_label.config(text="Speed: {:.2f} Mbps".format(receiving_speed))
         packet_count = 0
         start_time = time.time()
-    window.after(100, calculate_speed)  # Adjust the update frequency based on your needs
+    window.after(1000, calculate_speed)  # Schedule the next speed calculation
 
+# Function to process each packet
+def process_packet(packet):
+    global packet_count, payload
+    if packet.haslayer(Ether) and packet.haslayer(Raw):
+        payload = packet.getlayer(Raw).load
+        data = [payload[i:i + 2][::-1] for i in range(0, len(payload), 2)]  # Note byte order switching
+
+        for i, (key, text_box) in enumerate(text_boxes_left.items()):
+            if key in scaling_factors and i < len(data):
+                scaling_factor = scaling_factors[key]
+                hex_value = int.from_bytes(data[i], byteorder="big", signed=False)
+                scaled_value = ((hex_value - scaling_factor.get("offset", 0)) * scaling_factor.get("resolution", 1.0))
+
+                text_box.delete(0, END)
+                text_box.insert(END, "{:.2f}".format(scaled_value))
+            else:
+                text_box.delete(0, END)
+
+        packet_count += 1
 
 # Function to capture packets
 def capture_packets(interface):
-    sniff(iface=interface, prn=process_packet, filter="ether dst host F8:E4:3B:73:58:19", store=0)
-
+    sniff(iface=interface, prn=process_packet, filter="ether dst host F8:E4:3B:73:58:19", store=0)  #08:97:98:DD:EF:61", store=0)  # 00:73:41:00:04:f8", store=0)
 
 # Start capturing packets in a separate thread
 interface = "Gateway"  # Update with the correct interface name
 capture_thread = threading.Thread(target=capture_packets, args=(interface,))
 capture_thread.start()
 
-
 # Start the GUI main loop
-window.after(2000, update_gui)  # Start the GUI update loop
-window.after(100, calculate_speed)  # Start the speed calculation loop
+window.after(100, update_gui)  # Start the GUI update loop
+window.after(1000, calculate_speed)  # Start the speed calculation loop
 window.mainloop()
