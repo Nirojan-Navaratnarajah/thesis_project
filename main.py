@@ -63,6 +63,11 @@ scaling_factors = {
 
 # Create a frame for the Ethernet Frame Sender
 ethernet_frame_sender_frame = Frame(right_frame, bd=1, relief=SOLID)
+
+# Use a label to set a minimum height for the frame
+empty_label = Label(ethernet_frame_sender_frame, height=2)
+empty_label.pack()
+
 ethernet_frame_sender_frame.pack(padx=10, pady=10)
 
 # Create a label for the Ethernet Frame Sender
@@ -90,11 +95,23 @@ def send_single_frame():
 
     payload = b""
     for i in range(4):
-        data = data_entries[i].get().encode()[:32]  # Get the data from the entry widget and limit it to 32 bytes
+        data = data_entries[i].get().encode()[:4]  # Get the data from the entry widget and limit it to 32 bytes
         payload += data if data else b"\x00" * 32  # Use zero value if no data is entered
 
     packet = Ether(dst=dst_mac, src=src_mac, type=ethertype) / Raw(load=payload)
-    sendp(packet, iface="Ethernet")  # Replace "Ethernet" with your network interface
+
+    # Try to send the packet multiple times
+    max_attempts = 2
+    for attempt in range(max_attempts):
+        try:
+            sendp(packet, iface="388D")  # Replace "Ethernet" with your network interface
+            break  # If sending the packet was successful, break out of the loop
+        except Exception as e:
+            if attempt == max_attempts - 1:  # If this was the last attempt, raise the exception
+                raise
+            else:
+                time.sleep(0.5)  # Otherwise, wait for a while before retrying
+
 
 # Create a button to trigger sending a single frame
 send_button = Button(ethernet_frame_sender_frame, text="Send Frame", command=send_single_frame)
@@ -139,10 +156,10 @@ def process_packet(packet):
 
 # Function to capture packets
 def capture_packets(interface):
-    sniff(iface=interface, prn=process_packet, filter="ether dst host 00:73:41:00:04:f8", store=0)
+    sniff(iface=interface, prn=process_packet, filter="ether dst host 08:97:98:DD:EF:61", store=0)  # 00:73:41:00:04:f8", store=0)
 
 # Start capturing packets in a separate thread
-interface = "Ethernet"  # Update with the correct interface name
+interface = "388D"  # Update with the correct interface name
 capture_thread = threading.Thread(target=capture_packets, args=(interface,))
 capture_thread.start()
 

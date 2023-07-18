@@ -95,7 +95,7 @@ def capture_packets(interface):
 
 
 # Start capturing packets in a separate thread
-interface = "Ethernet 2"  # Update with the correct interface name
+interface = "Ethernet"  # Update with the correct interface name
 capture_thread = threading.Thread(target=capture_packets, args=(interface,))
 capture_thread.start()
 
