@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?ccsproject version="1.0"?>
+<projectOptions>
+	<ccsVersion value="12.2.0"/>
+	<deviceVariant value="com.ti.ccstudio.deviceModel.TMS470.GenericCortexM4Device"/>
+	<deviceFamily value="TMS470"/>
+	<deviceEndianness value="be32"/>
+	<codegenToolVersion value="20.2.7.LTS"/>
+	<isElfFormat value="true"/>
+	<createSlaveProjects value=""/>
+	<templateProperties value="id=driverlib_cm.projectspec.f2838x_driverlib_cm"/>
+	<origin value="C:\ti\c2000\C2000Ware_4_02_00_00\driverlib\f2838x\driverlib_cm\ccs\driverlib_cm.projectspec"/>
+	<filesToOpen value=""/>
+</projectOptions>

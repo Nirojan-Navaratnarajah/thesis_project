@@ -1,0 +1,7 @@
+"./ethernet_ipc_ex1_basic_cm.obj"
+"./startup_cm.obj"
+"./device/cm.obj"
+"./device/ethernet.obj"
+"../2838x_RAM_lnk_cm.cmd"
+"C:/ti/c2000/C2000Ware_4_02_00_00/driverlib/f2838x/driverlib_cm/ccs/Debug/driverlib_cm.lib"
+-llibc.a

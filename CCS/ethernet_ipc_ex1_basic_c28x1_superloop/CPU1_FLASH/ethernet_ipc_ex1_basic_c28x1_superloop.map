@@ -1,0 +1,416 @@
+******************************************************************************
+             TMS320C2000 Linker PC v22.6.0                     
+******************************************************************************
+>> Linked Sat Jul 15 21:57:20 2023
+
+OUTPUT FILE NAME:   <ethernet_ipc_ex1_basic_c28x1_superloop.out>
+ENTRY POINT SYMBOL: "code_start"  address: 00080000
+
+
+MEMORY CONFIGURATION
+
+         name            origin    length      used     unused   attr    fill
+----------------------  --------  ---------  --------  --------  ----  --------
+  BOOT_RSVD             00000002   000001af  00000000  000001af  RWIX
+  RAMM0                 000001b1   0000024f  00000000  0000024f  RWIX
+  RAMM1                 00000400   000003f8  000003f8  00000000  RWIX
+  RAMLS0                00008000   00000800  000000d5  0000072b  RWIX
+  RAMLS1                00008800   00000800  00000000  00000800  RWIX
+  RAMLS2                00009000   00000800  00000000  00000800  RWIX
+  RAMLS3                00009800   00000800  00000000  00000800  RWIX
+  RAMLS4                0000a000   00000800  00000000  00000800  RWIX
+  RAMLS5                0000a800   00000800  00000010  000007f0  RWIX
+  RAMLS6                0000b000   00000800  00000000  00000800  RWIX
+  RAMLS7                0000b800   00000800  00000000  00000800  RWIX
+  RAMD0                 0000c000   00000800  00000000  00000800  RWIX
+  RAMD1                 0000c800   00000800  00000000  00000800  RWIX
+  RAMGS0                0000d000   00001000  00000000  00001000  RWIX
+  RAMGS1                0000e000   00001000  00000000  00001000  RWIX
+  RAMGS2                0000f000   00001000  00000000  00001000  RWIX
+  RAMGS3                00010000   00001000  00000000  00001000  RWIX
+  RAMGS4                00011000   00001000  00000000  00001000  RWIX
+  RAMGS5                00012000   00001000  00000000  00001000  RWIX
+  RAMGS6                00013000   00001000  00000000  00001000  RWIX
+  RAMGS7                00014000   00001000  00000000  00001000  RWIX
+  RAMGS8                00015000   00001000  00000000  00001000  RWIX
+  RAMGS9                00016000   00001000  00000000  00001000  RWIX
+  RAMGS10               00017000   00001000  00000000  00001000  RWIX
+  RAMGS11               00018000   00001000  00000000  00001000  RWIX
+  RAMGS12               00019000   00001000  00000000  00001000  RWIX
+  RAMGS13               0001a000   00001000  00000000  00001000  RWIX
+  RAMGS14               0001b000   00001000  00000000  00001000  RWIX
+  RAMGS15               0001c000   00000ff8  00000000  00000ff8  RWIX
+  CMTOCPURAM            00038000   00000800  00000088  00000778  RWIX
+  CPUTOCMRAM            00039000   00000800  00000688  00000178  RWIX
+  CPU1TOCPU2RAM         0003a000   00000800  00000088  00000778  RWIX
+  CPU2TOCPU1RAM         0003b000   00000800  00000088  00000778  RWIX
+  CANA_MSG_RAM          00049000   00000800  00000000  00000800  RWIX
+  CANB_MSG_RAM          0004b000   00000800  00000000  00000800  RWIX
+  BEGIN                 00080000   00000002  00000002  00000000  RWIX
+  FLASH0                00080002   00001ffe  00000000  00001ffe  RWIX
+  FLASH1                00082000   00002000  00000d24  000012dc  RWIX
+  FLASH2                00084000   00002000  00000000  00002000  RWIX
+  FLASH3                00086000   00002000  000000d5  00001f2b  RWIX
+  FLASH4                00088000   00008000  0000001c  00007fe4  RWIX
+  FLASH5                00090000   00008000  0000012c  00007ed4  RWIX
+  FLASH6                00098000   00008000  00000000  00008000  RWIX
+  FLASH7                000a0000   00008000  00000000  00008000  RWIX
+  FLASH8                000a8000   00008000  00000000  00008000  RWIX
+  FLASH9                000b0000   00008000  00000000  00008000  RWIX
+  FLASH10               000b8000   00002000  00000000  00002000  RWIX
+  FLASH11               000ba000   00002000  00000000  00002000  RWIX
+  FLASH12               000bc000   00002000  00000000  00002000  RWIX
+  FLASH13               000be000   00001ff0  00000000  00001ff0  RWIX
+  RESET                 003fffc0   00000002  00000000  00000002  RWIX
+
+
+SECTION ALLOCATION MAP
+
+ output                                  attributes/
+section   page    origin      length       input sections
+--------  ----  ----------  ----------   ----------------
+codestart 
+*          0    00080000    00000002     
+                  00080000    00000002     f2838x_codestartbranch.obj (codestart)
+
+.cinit     0    00088000    0000001c     
+                  00088000    00000008     (.cinit..data.load) [load image, compression = lzss]
+                  00088008    00000006     (__TI_handler_table)
+                  0008800e    00000004     (.cinit..bss.load) [load image, compression = zero_init]
+                  00088012    00000002     --HOLE-- [fill = 0]
+                  00088014    00000008     (__TI_cinit_table)
+
+.reset     0    003fffc0    00000000     DSECT
+
+.stack     0    00000400    000003f8     UNINITIALIZED
+                  00000400    000003f8     --HOLE--
+
+.init_array 
+*          0    00082000    00000000     UNINITIALIZED
+
+.bss       0    0000a800    00000008     UNINITIALIZED
+                  0000a800    00000008     ethernet_ipc_ex1_basic_c28x1.obj (.bss)
+
+.data      0    0000a808    00000008     UNINITIALIZED
+                  0000a808    00000006     rts2800_fpu64_eabi.lib : exit.c.obj (.data)
+                  0000a80e    00000002                            : _lock.c.obj (.data:_lock)
+
+MSGRAM_CM_TO_CPU 
+*          0    00038000    00000088     UNINITIALIZED
+                  00038000    00000088     ipc.obj (MSGRAM_CM_TO_CPU)
+
+MSGRAM_CPU_TO_CM 
+*          0    00039000    00000688     UNINITIALIZED
+                  00039000    000005de     ethernet_ipc_ex1_basic_c28x1.obj (MSGRAM_CPU_TO_CM)
+                  000395de    00000022     --HOLE--
+                  00039600    00000088     ipc.obj (MSGRAM_CPU_TO_CM)
+
+.const     0    00090000    0000012c     
+                  00090000    00000088     ipc.obj (.const:IPC_Instance)
+                  00090088    00000038     flash.obj (.const:.string)
+                  000900c0    00000038     sysctl.obj (.const:.string)
+                  000900f8    00000034     <whole-program> (.const:.string)
+
+MSGRAM_CPU1_TO_CPU2 
+*          0    0003a000    00000088     UNINITIALIZED
+                  0003a000    00000088     ipc.obj (MSGRAM_CPU1_TO_CPU2)
+
+MSGRAM_CPU2_TO_CPU1 
+*          0    0003b000    00000088     UNINITIALIZED
+                  0003b000    00000088     ipc.obj (MSGRAM_CPU2_TO_CPU1)
+
+.TI.ramfunc 
+*          0    00086000    000000d5     RUN ADDR = 00008000
+                  00086000    000000d1     flash.obj (.TI.ramfunc:Flash_initModule)
+                  000860d1    00000004     sysctl.obj (.TI.ramfunc)
+
+.text      0    00082000    00000d24     
+                  00082000    000002b1     dcc.obj (.text:DCC_verifyClockFrequency)
+                  000822b1    00000167     device.obj (.text:Device_enableAllPeripherals)
+                  00082418    00000149     sysctl.obj (.text:SysCtl_isPLLValid)
+                  00082561    00000117     sysctl.obj (.text:SysCtl_setClock)
+                  00082678    000000f8     ethernet_ipc_ex1_basic_c28x1.obj (.text:main)
+                  00082770    000000f3     sysctl.obj (.text:SysCtl_setAuxClock)
+                  00082863    00000088     rts2800_fpu64_eabi.lib : fs_div28.asm.obj (.text)
+                  000828eb    00000075     device.obj (.text:Device_init)
+                  00082960    00000072     sysctl.obj (.text:SysCtl_getClock)
+                  000829d2    0000006e     sysctl.obj (.text:SysCtl_getAuxClock)
+                  00082a40    0000003c     sysctl.obj (.text:SysCtl_selectOscSource)
+                  00082a7c    00000039     sysctl.obj (.text:SysCtl_selectOscSourceAuxPLL)
+                  00082ab5    00000030     gpio.obj (.text:GPIO_setPinConfig)
+                  00082ae5    0000002e     rts2800_fpu64_eabi.lib : copy_decompress_lzss.c.obj (.text:decompress:lzss)
+                  00082b13    0000002b                            : autoinit.c.obj (.text:__TI_auto_init_nobinit_nopinit)
+                  00082b3e    00000029                            : exit.c.obj (.text)
+                  00082b67    00000028     sysctl.obj (.text:SysCtl_selectXTAL)
+                  00082b8f    00000024     sysctl.obj (.text:SysCtl_getLowSpeedClock)
+                  00082bb3    00000023     sysctl.obj (.text:SysCtl_pollX1Counter)
+                  00082bd6    0000001f     gpio.obj (.text:GPIO_setPadConfig)
+                  00082bf5    0000001e     device.obj (.text:Device_initGPIO)
+                  00082c13    0000001d     rts2800_fpu64_eabi.lib : memcpy.c.obj (.text)
+                  00082c30    0000001c     device.obj (.text:Device_verifyXTAL)
+                  00082c4c    0000001c     sysctl.obj (.text:SysCtl_selectXTALSingleEnded)
+                  00082c68    0000001b     device.obj (.text:Device_enableUnbondedGPIOPullups)
+                  00082c83    00000019     device.obj (.text:SysCtl_enablePeripheral)
+                  00082c9c    00000019     rts2800_fpu64_eabi.lib : boot28.asm.obj (.text)
+                  00082cb5    00000017     sysctl.obj (.text:SysCtl_controlCMReset)
+                  00082ccc    00000015     device.obj (.text:Device_bootCM)
+                  00082ce1    00000013     gpio.obj (.text:GPIO_setDirectionMode)
+                  00082cf4    0000000d     rts2800_fpu64_eabi.lib : copy_zero_init.c.obj (.text:decompress:ZI:__TI_zero_init_nomemset)
+                  00082d01    0000000c                            : args_main.c.obj (.text)
+                  00082d0d    00000008                            : copy_decompress_none.c.obj (.text:decompress:none)
+                  00082d15    00000008     f2838x_codestartbranch.obj (.text)
+                  00082d1d    00000003     device.obj (.text:__error__)
+                  00082d20    00000002     rts2800_fpu64_eabi.lib : pre_init.c.obj (.text)
+                  00082d22    00000001                            : _lock.c.obj (.text)
+                  00082d23    00000001                            : startup.c.obj (.text)
+
+MODULE SUMMARY
+
+       Module                                   code   ro data   rw data
+       ------                                   ----   -------   -------
+    .\
+       ethernet_ipc_ex1_basic_c28x1.obj         248    0         1510   
+    +--+----------------------------------------+------+---------+---------+
+       Total:                                   248    0         1510   
+                                                                        
+    .\device\
+       device.obj                               610    0         0      
+       f2838x_codestartbranch.obj               10     0         0      
+    +--+----------------------------------------+------+---------+---------+
+       Total:                                   620    0         0      
+                                                                        
+    .\device\driverlib\
+       sysctl.obj                               1362   56        0      
+       dcc.obj                                  689    0         0      
+       ipc.obj                                  0      136       544    
+       flash.obj                                418    56        0      
+       gpio.obj                                 98     0         0      
+    +--+----------------------------------------+------+---------+---------+
+       Total:                                   2567   248       544    
+                                                                        
+    C:\Users\nniro\AppData\Local\Temp\
+       {3B14FE6F-FC1B-47C7-AC5A-483D615411C4}   0      52        0      
+    +--+----------------------------------------+------+---------+---------+
+       Total:                                   0      52        0      
+                                                                        
+    C:\ti\ccs1220\ccs\tools\compiler\ti-cgt-c2000_22.6.0.LTS\lib\rts2800_fpu64_eabi.lib
+       fs_div28.asm.obj                         136    0         0      
+       exit.c.obj                               41     0         6      
+       copy_decompress_lzss.c.obj               46     0         0      
+       autoinit.c.obj                           43     0         0      
+       memcpy.c.obj                             29     0         0      
+       boot28.asm.obj                           25     0         0      
+       copy_zero_init.c.obj                     13     0         0      
+       args_main.c.obj                          12     0         0      
+       copy_decompress_none.c.obj               8      0         0      
+       _lock.c.obj                              1      0         2      
+       pre_init.c.obj                           2      0         0      
+       startup.c.obj                            1      0         0      
+    +--+----------------------------------------+------+---------+---------+
+       Total:                                   357    0         8      
+                                                                        
+       Stack:                                   0      0         1016   
+       Linker Generated:                        0      26        0      
+    +--+----------------------------------------+------+---------+---------+
+       Grand Total:                             3792   326       3078   
+
+
+LINKER GENERATED COPY TABLES
+
+__TI_cinit_table @ 00088014 records: 2, size/record: 4, table size: 8
+	.data: load addr=00088000, load size=00000008 bytes, run addr=0000a808, run size=00000008 bytes, compression=lzss
+	.bss: load addr=0008800e, load size=00000004 bytes, run addr=0000a800, run size=00000008 bytes, compression=zero_init
+
+
+LINKER GENERATED HANDLER TABLE
+
+__TI_handler_table @ 00088008 records: 3, size/record: 2, table size: 6
+	index: 0, handler: __TI_zero_init
+	index: 1, handler: __TI_decompress_lzss
+	index: 2, handler: __TI_decompress_none
+
+
+GLOBAL DATA SYMBOLS: SORTED BY DATA PAGE
+
+address     data page           name
+--------    ----------------    ----
+00000400      10 (00000400)     __stack
+
+0000a800     2a0 (0000a800)     pass
+0000a802     2a0 (0000a800)     command
+0000a804     2a0 (0000a800)     addrReg
+0000a806     2a0 (0000a800)     data
+0000a808     2a0 (0000a800)     __TI_enable_exit_profile_output
+0000a80a     2a0 (0000a800)     __TI_cleanup_ptr
+0000a80c     2a0 (0000a800)     __TI_dtors_ptr
+0000a80e     2a0 (0000a800)     _lock
+
+00038000     e00 (00038000)     IPC_CPU_To_CM_GetBuffer
+
+00039000     e40 (00039000)     packetData
+
+00039600     e58 (00039600)     IPC_CPU_To_CM_PutBuffer
+
+0003a000     e80 (0003a000)     IPC_CPU1_To_CPU2_PutBuffer
+
+0003b000     ec0 (0003b000)     IPC_CPU1_To_CPU2_GetBuffer
+
+00090000    2400 (00090000)     IPC_Instance
+
+
+GLOBAL SYMBOLS: SORTED ALPHABETICALLY BY Name 
+
+page  address   name                            
+----  -------   ----                            
+0     00082b3e  C$$EXIT                         
+0     00082000  DCC_verifyClockFrequency        
+0     00082ccc  Device_bootCM                   
+0     000822b1  Device_enableAllPeripherals     
+0     00082c68  Device_enableUnbondedGPIOPullups
+0     000828eb  Device_init                     
+0     00082bf5  Device_initGPIO                 
+0     00082c30  Device_verifyXTAL               
+0     00008000  Flash_initModule                
+0     00082ce1  GPIO_setDirectionMode           
+0     00082bd6  GPIO_setPadConfig               
+0     00082ab5  GPIO_setPinConfig               
+0     0003b000  IPC_CPU1_To_CPU2_GetBuffer      
+0     0003a000  IPC_CPU1_To_CPU2_PutBuffer      
+0     00038000  IPC_CPU_To_CM_GetBuffer         
+0     00039600  IPC_CPU_To_CM_PutBuffer         
+0     00090000  IPC_Instance                    
+0     000860d5  RamfuncsLoadEnd                 
+abs   000000d5  RamfuncsLoadSize                
+0     00086000  RamfuncsLoadStart               
+0     000080d5  RamfuncsRunEnd                  
+abs   000000d5  RamfuncsRunSize                 
+0     00008000  RamfuncsRunStart                
+0     00082cb5  SysCtl_controlCMReset           
+0     000080d1  SysCtl_delay                    
+0     000829d2  SysCtl_getAuxClock              
+0     00082960  SysCtl_getClock                 
+0     00082b8f  SysCtl_getLowSpeedClock         
+0     00082418  SysCtl_isPLLValid               
+0     00082a40  SysCtl_selectOscSource          
+0     00082a7c  SysCtl_selectOscSourceAuxPLL    
+0     00082b67  SysCtl_selectXTAL               
+0     00082c4c  SysCtl_selectXTALSingleEnded    
+0     00082770  SysCtl_setAuxClock              
+0     00082561  SysCtl_setClock                 
+0     00088014  __TI_CINIT_Base                 
+0     0008801c  __TI_CINIT_Limit                
+0     0008801c  __TI_CINIT_Warm                 
+0     00088008  __TI_Handler_Table_Base         
+0     0008800e  __TI_Handler_Table_Limit        
+0     000007f8  __TI_STACK_END                  
+abs   000003f8  __TI_STACK_SIZE                 
+0     00082b13  __TI_auto_init_nobinit_nopinit  
+0     0000a80a  __TI_cleanup_ptr                
+0     00082ae5  __TI_decompress_lzss            
+0     00082d0d  __TI_decompress_none            
+0     0000a80c  __TI_dtors_ptr                  
+0     0000a808  __TI_enable_exit_profile_output 
+abs   ffffffff  __TI_pprof_out_hndl             
+abs   ffffffff  __TI_prof_data_size             
+abs   ffffffff  __TI_prof_data_start            
+0     00082cf4  __TI_zero_init_nomemset         
+0     00082863  __c28xabi_divf                  
+n/a   UNDEFED   __c_args__                      
+0     00082d1d  __error__                       
+0     00000400  __stack                         
+0     00082d01  _args_main                      
+0     00082c9c  _c_int00                        
+0     0000a80e  _lock                           
+0     00082d22  _nop                            
+0     00082d23  _system_post_cinit              
+0     00082d20  _system_pre_init                
+0     00082b3e  abort                           
+0     0000a804  addrReg                         
+0     00080000  code_start                      
+0     0000a802  command                         
+0     0000a806  data                            
+0     00082b40  exit                            
+0     00082678  main                            
+0     00082c13  memcpy                          
+0     00039000  packetData                      
+0     0000a800  pass                            
+
+
+GLOBAL SYMBOLS: SORTED BY Symbol Address 
+
+page  address   name                            
+----  -------   ----                            
+0     00000400  __stack                         
+0     000007f8  __TI_STACK_END                  
+0     00008000  Flash_initModule                
+0     00008000  RamfuncsRunStart                
+0     000080d1  SysCtl_delay                    
+0     000080d5  RamfuncsRunEnd                  
+0     0000a800  pass                            
+0     0000a802  command                         
+0     0000a804  addrReg                         
+0     0000a806  data                            
+0     0000a808  __TI_enable_exit_profile_output 
+0     0000a80a  __TI_cleanup_ptr                
+0     0000a80c  __TI_dtors_ptr                  
+0     0000a80e  _lock                           
+0     00038000  IPC_CPU_To_CM_GetBuffer         
+0     00039000  packetData                      
+0     00039600  IPC_CPU_To_CM_PutBuffer         
+0     0003a000  IPC_CPU1_To_CPU2_PutBuffer      
+0     0003b000  IPC_CPU1_To_CPU2_GetBuffer      
+0     00080000  code_start                      
+0     00082000  DCC_verifyClockFrequency        
+0     000822b1  Device_enableAllPeripherals     
+0     00082418  SysCtl_isPLLValid               
+0     00082561  SysCtl_setClock                 
+0     00082678  main                            
+0     00082770  SysCtl_setAuxClock              
+0     00082863  __c28xabi_divf                  
+0     000828eb  Device_init                     
+0     00082960  SysCtl_getClock                 
+0     000829d2  SysCtl_getAuxClock              
+0     00082a40  SysCtl_selectOscSource          
+0     00082a7c  SysCtl_selectOscSourceAuxPLL    
+0     00082ab5  GPIO_setPinConfig               
+0     00082ae5  __TI_decompress_lzss            
+0     00082b13  __TI_auto_init_nobinit_nopinit  
+0     00082b3e  C$$EXIT                         
+0     00082b3e  abort                           
+0     00082b40  exit                            
+0     00082b67  SysCtl_selectXTAL               
+0     00082b8f  SysCtl_getLowSpeedClock         
+0     00082bd6  GPIO_setPadConfig               
+0     00082bf5  Device_initGPIO                 
+0     00082c13  memcpy                          
+0     00082c30  Device_verifyXTAL               
+0     00082c4c  SysCtl_selectXTALSingleEnded    
+0     00082c68  Device_enableUnbondedGPIOPullups
+0     00082c9c  _c_int00                        
+0     00082cb5  SysCtl_controlCMReset           
+0     00082ccc  Device_bootCM                   
+0     00082ce1  GPIO_setDirectionMode           
+0     00082cf4  __TI_zero_init_nomemset         
+0     00082d01  _args_main                      
+0     00082d0d  __TI_decompress_none            
+0     00082d1d  __error__                       
+0     00082d20  _system_pre_init                
+0     00082d22  _nop                            
+0     00082d23  _system_post_cinit              
+0     00086000  RamfuncsLoadStart               
+0     000860d5  RamfuncsLoadEnd                 
+0     00088008  __TI_Handler_Table_Base         
+0     0008800e  __TI_Handler_Table_Limit        
+0     00088014  __TI_CINIT_Base                 
+0     0008801c  __TI_CINIT_Limit                
+0     0008801c  __TI_CINIT_Warm                 
+0     00090000  IPC_Instance                    
+abs   000000d5  RamfuncsLoadSize                
+abs   000000d5  RamfuncsRunSize                 
+abs   000003f8  __TI_STACK_SIZE                 
+abs   ffffffff  __TI_pprof_out_hndl             
+abs   ffffffff  __TI_prof_data_size             
+abs   ffffffff  __TI_prof_data_start            
+n/a   UNDEFED   __c_args__                      
+
+[72 symbols]
