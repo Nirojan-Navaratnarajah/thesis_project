@@ -273,7 +273,7 @@ def process_packet(packet):
 
     if packet.haslayer(Ether) and packet.haslayer(Raw):
         payload = packet.getlayer(Raw).load
-        data = [payload[i:i + 2][::-1] for i in range(0, len(payload), 2)]  # Note byte order switching
+        data = [payload[i:i + 2][::-1] for i in range(0, len(payload), 4)]  # Note byte order switching
 
         for i, (key, text_box) in enumerate(text_boxes_left.items()):
             if key in scaling_factors and i < len(data):
