@@ -8,6 +8,12 @@ from tkinter import messagebox
 import csv
 
 
+packet_count = 0
+start_time = time.time()
+payload_size = 0
+
+
+
 # Database file path
 db_file = 'scaling_factors.db'
 
@@ -79,11 +85,7 @@ def update_scaling_factors():
     Button(update_window, text="Submit", command=submit_changes).grid(row=len(scaling_factors), column=0, columnspan=2)
 
 # Function to log the recieved data
-
-
-
-
-logging_enabled =False
+logging_enabled = False
 
 # Function to log the received data
 def log_payload_data():
@@ -93,46 +95,45 @@ def log_payload_data():
         with open('FSI_data.csv', 'a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow([timestamp] + payload_data)  # Add the timestamp to the payload data
-            file.write('\n ')  # Add an extra newline and a space
+            file.write('\n \n')  # Add an extra newline and a space
         payload_data = []  # Clear the payload data after logging
-
-  #  else:
-      #  print("Logging skipped: logging_enabled={}, payload_data={}".format(logging_enabled, payload_data))  # Debugging message
-
+    else:
+        pass  # Debugging message
 
 
-def start_logging() :
+def start_logging():
     global logging_enabled
     logging_enabled = True
     log_button.configure(state=DISABLED)
     stop_button.configure(state=NORMAL)
-    print(os.getcwd() + "       logging started")
 
-def stop_logging() :
+
+def stop_logging():
     global logging_enabled
     logging_enabled = False
-    log_button.configure(state= NORMAL)
-    stop_button.configure(state = DISABLED)
+    log_button.configure(state=NORMAL)
+    stop_button.configure(state=DISABLED)
     log_payload_data() # call the function one last time to log any remaining data
-    print("Stopped logging data") # for debuggin purpose
-
 
 # Create GUI
 window = Tk()
 window.title("HV/DCDC ADC Parameters")
-window.geometry("600x450")
+window.geometry("600x600")
 
 # Create a container for the left side widgets
-left_container = Frame(window)
+main_frame = Frame(window)
+main_frame.pack(padx=10, pady=10)
+
+left_container = Frame(main_frame)
 left_container.pack(side=LEFT)
 
 # Create a frame for the FSI data
 fsi_frame = Frame(left_container, bd=1, relief=SOLID)
-fsi_frame.pack(padx=10, pady=10)
+fsi_frame.pack(padx=10, pady=(60,10))
 
 # Create a label for the frame
 fsi_label = Label(fsi_frame, text="FSI Data From HV/DCDC", font=("Arial", 14, "bold"))
-fsi_label.pack(side=TOP)
+fsi_label.pack(side=TOP,pady=(20))
 
 # Create a Frame for the left side
 left_frame = Frame(fsi_frame)
@@ -157,43 +158,50 @@ for i, (key, label) in enumerate(labels_left.items()):
     text_box.grid(row=i, column=1, sticky=W, padx=5, pady=5)
     text_boxes_left[key] = text_box
 
-speed_label = Label(left_frame, text="Speed: ", anchor=CENTER)
-speed_label.grid(row=len(labels_left), columnspan=2, padx=5, pady=10)
+# Define the speed label similar to other labels
+speed_label = Label(left_frame, text="Speed: ", anchor=W)
+speed_label.grid(row=len(labels_left), column=0, padx=5, pady=5)
+
+# Define a read-only Entry widget for the speed
+speed_entry = Entry(left_frame, state='readonly', width=20)
+speed_entry.grid(row=len(labels_left), column=1, padx=5, pady=5)
 
 packet_count = 0
 start_time = 0
 payload = b""  # Initialize payload variable
-
-
 
 # Create a frame for the Update Scaling Factors button
 button_frame = Frame(left_container)
 button_frame.pack(padx=10, pady=10)
 
 # Create a button to trigger updating the scaling factors
-update_button = Button(button_frame, text="Update Scaling Factors", command= update_scaling_factors)
+update_button = Button(button_frame, text="Update Scaling Factors", command=update_scaling_factors)
 update_button.pack(pady=10)
+
+# Define a read-only Entry widget for the speed
+speed_entry = Entry(left_frame, state='readonly', width=20)
+speed_entry.grid(row=len(labels_left), column=1, padx=5, pady=5)
 
 # Create a button to log data
 log_button = Button(left_frame, text=" Start Logging", command=start_logging)
-log_button.grid(row=len(labels_left) + 1, columnspan=2, padx=5, pady=10)
+log_button.grid(row=len(labels_left) + 1, column=0, padx=(1,1), pady=(30,25))
 
 # Create a button to stop logging
 stop_button = Button(left_frame, text="Stop Logging", command=stop_logging, state=DISABLED)
-stop_button.grid(row=len(labels_left) + 2, columnspan=2, padx=5, pady=10)
+stop_button.grid(row=len(labels_left) + 1, column=1, padx=(1,1), pady=(30,25))
 
 # Create a Frame for the right side
-right_frame = Frame(window)
+right_frame = Frame(main_frame)
 right_frame.pack(side=RIGHT, padx=10, pady=10)
 
 # Create a frame for the Ethernet Frame Sender
 ethernet_frame_sender_frame = Frame(right_frame, bd=1, relief=SOLID)
 
 # Use a label to set a minimum height for the frame
-empty_label = Label(ethernet_frame_sender_frame, height=6)
+empty_label = Label(ethernet_frame_sender_frame, height=1)
 empty_label.pack()
 
-ethernet_frame_sender_frame.pack(padx=10, pady=10)
+ethernet_frame_sender_frame.pack(anchor=N,padx=10, pady=20)
 
 # Create a label for the Ethernet Frame Sender
 ethernet_frame_sender_label = Label(ethernet_frame_sender_frame, text="Ethernet Frame Sender", font=("Arial", 14, "bold"))
@@ -229,7 +237,7 @@ def send_single_frame():
     max_attempts = 2
     for attempt in range(max_attempts):
         try:
-            sendp(packet, iface="Ethernet 3")  # Replace "Ethernet" with your network interface
+            sendp(packet, iface="Gateway")  # Replace "Ethernet" with your network interface
             break  # If sending the packet was successful, break out of the loop
         except Exception as e:
             if attempt == max_attempts - 1:  # If this was the last attempt, raise the exception
@@ -237,42 +245,46 @@ def send_single_frame():
             else:
                 time.sleep(0.5)  # Otherwise, wait for a while before retrying
 
-
 # Create a button to trigger sending a single frame
 send_button = Button(ethernet_frame_sender_frame, text="Send Frame", command=send_single_frame)
-send_button.pack(pady=10)
+send_button.pack(pady=(70,15))
 
 # Function to update the GUI
 def update_gui():
     global packet_count, start_time
 
-
-
     window.update()
     window.after(100, update_gui)  # Schedule the next GUI update
 
+
 # Function to calculate speed and update speed label
 def calculate_speed():
-    global packet_count, start_time
+    global packet_count, start_time, payload_size
     elapsed_time = time.time() - start_time
+
     if elapsed_time > 0:
-        receiving_speed = (packet_count * len(payload) * 8) / (elapsed_time * 1000000)
-        speed_label.config(text="Speed: {:.2f} Mbps".format(receiving_speed))
-        packet_count = 0
-        start_time = time.time()
-    window.after(1000, calculate_speed)  # Schedule the next speed calculation
+        total_size = packet_count * payload_size  # Total size of payload data received
+        receiving_speed = (total_size * 8) / (elapsed_time * 1000000)  # Calculate speed in Mbps
+        speed_entry.config(state='normal')  # Temporarily set state to normal to modify text
+        speed_entry.delete(0, END)
+        speed_entry.insert(END, "{:.2f} Mbps".format(receiving_speed))
+        speed_entry.config(state='readonly')  # Set the state back to readonly
 
-
+        packet_count = 0  # Reset packet count
+        start_time = time.time()  # Reset start time
+    window.after(500, calculate_speed)  # Schedule the next speed calculation
 
 
 # Function to process each packet
 payload_data = [] #global variable to store payload data
 
+
 def process_packet(packet):
-    global packet_count, payload , payload_data
+    global packet_count, payload, payload_data, payload_size
 
     if packet.haslayer(Ether) and packet.haslayer(Raw):
         payload = packet.getlayer(Raw).load
+        payload_size = len(payload)  # Update payload_size
         data = [payload[i:i + 2][::-1] for i in range(0, len(payload), 4)]  # Note byte order switching
 
         for i, (key, text_box) in enumerate(text_boxes_left.items()):
@@ -288,20 +300,24 @@ def process_packet(packet):
 
         packet_count += 1
 
-        #store payload data in global variable
-        payload_data=data
+        # Store payload data in global variable
+        payload_data = data
         log_payload_data()
+
+
 
 # Function to capture packets
 def capture_packets(interface):
     sniff(iface=interface, prn=process_packet, filter="ether dst host F8:E4:3B:73:58:19", store=0)  #08:97:98:DD:EF:61", store=0)  # 00:73:41:00:04:f8", store=0)
 
 # Start capturing packets in a separate thread
-interface = "Ethernet 3"  # Update with the correct interface name
+interface = "Gateway"  # Update with the correct interface name
 capture_thread = threading.Thread(target=capture_packets, args=(interface,))
 capture_thread.start()
 
+
+
 # Start the GUI main loop
 window.after(100, update_gui)  # Start the GUI update loop
-window.after(1000, calculate_speed)  # Start the speed calculation loop
+#window.after(500, calculate_speed)  # Start the speed calculation loop
 window.mainloop()
