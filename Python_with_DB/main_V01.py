@@ -5,6 +5,8 @@ import threading
 import os
 import sqlite3
 from tkinter import messagebox
+import csv
+
 
 # Database file path
 db_file = 'scaling_factors.db'
@@ -76,6 +78,44 @@ def update_scaling_factors():
     # Create a submit button
     Button(update_window, text="Submit", command=submit_changes).grid(row=len(scaling_factors), column=0, columnspan=2)
 
+# Function to log the recieved data
+
+
+
+
+logging_enabled =False
+
+# Function to log the received data
+def log_payload_data():
+    global payload_data, logging_enabled
+    if payload_data and logging_enabled:
+        timestamp = time.strftime("%Y-%m-%d %H:%M:%S")  # Get the current timestamp
+        with open('FSI_data.csv', 'a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow([timestamp] + payload_data)  # Add the timestamp to the payload data
+            file.write('\n ')  # Add an extra newline and a space
+        payload_data = []  # Clear the payload data after logging
+
+  #  else:
+      #  print("Logging skipped: logging_enabled={}, payload_data={}".format(logging_enabled, payload_data))  # Debugging message
+
+
+
+def start_logging() :
+    global logging_enabled
+    logging_enabled = True
+    log_button.configure(state=DISABLED)
+    stop_button.configure(state=NORMAL)
+    print(os.getcwd() + "       logging started")
+
+def stop_logging() :
+    global logging_enabled
+    logging_enabled = False
+    log_button.configure(state= NORMAL)
+    stop_button.configure(state = DISABLED)
+    log_payload_data() # call the function one last time to log any remaining data
+    print("Stopped logging data") # for debuggin purpose
+
 
 # Create GUI
 window = Tk()
@@ -124,13 +164,23 @@ packet_count = 0
 start_time = 0
 payload = b""  # Initialize payload variable
 
+
+
 # Create a frame for the Update Scaling Factors button
 button_frame = Frame(left_container)
 button_frame.pack(padx=10, pady=10)
 
 # Create a button to trigger updating the scaling factors
-update_button = Button(button_frame, text="Update Scaling Factors", command=update_scaling_factors)
+update_button = Button(button_frame, text="Update Scaling Factors", command= update_scaling_factors)
 update_button.pack(pady=10)
+
+# Create a button to log data
+log_button = Button(left_frame, text=" Start Logging", command=start_logging)
+log_button.grid(row=len(labels_left) + 1, columnspan=2, padx=5, pady=10)
+
+# Create a button to stop logging
+stop_button = Button(left_frame, text="Stop Logging", command=stop_logging, state=DISABLED)
+stop_button.grid(row=len(labels_left) + 2, columnspan=2, padx=5, pady=10)
 
 # Create a Frame for the right side
 right_frame = Frame(window)
@@ -195,6 +245,9 @@ send_button.pack(pady=10)
 # Function to update the GUI
 def update_gui():
     global packet_count, start_time
+
+
+
     window.update()
     window.after(100, update_gui)  # Schedule the next GUI update
 
@@ -209,9 +262,15 @@ def calculate_speed():
         start_time = time.time()
     window.after(1000, calculate_speed)  # Schedule the next speed calculation
 
+
+
+
 # Function to process each packet
+payload_data = [] #global variable to store payload data
+
 def process_packet(packet):
-    global packet_count, payload
+    global packet_count, payload , payload_data
+
     if packet.haslayer(Ether) and packet.haslayer(Raw):
         payload = packet.getlayer(Raw).load
         data = [payload[i:i + 2][::-1] for i in range(0, len(payload), 2)]  # Note byte order switching
@@ -228,6 +287,10 @@ def process_packet(packet):
                 text_box.delete(0, END)
 
         packet_count += 1
+
+        #store payload data in global variable
+        payload_data=data
+        log_payload_data()
 
 # Function to capture packets
 def capture_packets(interface):

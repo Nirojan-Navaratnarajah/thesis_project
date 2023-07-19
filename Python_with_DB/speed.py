@@ -38,7 +38,7 @@ def capture_packets(interface):
     sniff(iface=interface, prn=process_packet, filter="ether dst host F8:E4:3B:73:58:19", store=0)
 
 # Start capturing packets in a separate thread
-interface = "Gateway"  # Update with the correct interface name
+interface = "Ethernet 3"  # Update with the correct interface name
 capture_thread = threading.Thread(target=capture_packets, args=(interface,))
 capture_thread.start()
 
